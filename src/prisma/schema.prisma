@@ -22,14 +22,13 @@ model User {
   time          Int?
   leaderboard   Leaderboard @relation(fields: [leaderboardId], references: [id])
   leaderboardId Int
-  image         ImageData   @relation(fields: [imageId], references: [id])
-  imageId       Int
 }
 
 model Leaderboard {
   id    Int    @id @default(autoincrement())
   name  String
   users User[]
+  imageData ImageData?
 }
 
 model ImageData {
@@ -41,5 +40,7 @@ model ImageData {
   width    Int
   height   Int
   imgRoute String
-  users    User[]
+  name String
+  leaderboard   Leaderboard @relation(fields: [leaderboardId], references: [id])
+  leaderboardId Int         @unique
 }
