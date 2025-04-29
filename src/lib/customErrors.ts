@@ -18,6 +18,13 @@ class ValidationError extends Error {
   }
 }
 
+class InternalError extends Error {
+  statusCode: number;
+  constructor(message: string, statusCode: number) {
+    super(message), (this.statusCode = statusCode);
+  }
+}
+
 class DbError extends Error {
   statusCode: number;
   dbErr: Error;
@@ -27,4 +34,4 @@ class DbError extends Error {
   }
 }
 
-export { DbError, ValidationError, CustomError };
+export { DbError, ValidationError, CustomError, InternalError };
