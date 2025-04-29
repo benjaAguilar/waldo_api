@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -25,14 +24,15 @@ model User {
 }
 
 model Leaderboard {
-  id    Int    @id @default(autoincrement())
-  name  String
-  users User[]
-  imageData ImageData?
+  id          Int        @id @default(autoincrement())
+  name        String
+  users       User[]
+  imageData   ImageData  @relation(fields: [imageDataId], references: [id])
+  imageDataId Int        @unique
 }
 
 model ImageData {
-  id       Int    @id @default(autoincrement())
+  id       Int       @id @default(autoincrement())
   x1       Int
   x2       Int
   y1       Int
@@ -40,7 +40,6 @@ model ImageData {
   width    Int
   height   Int
   imgRoute String
-  name String
-  leaderboard   Leaderboard @relation(fields: [leaderboardId], references: [id])
-  leaderboardId Int         @unique
+  name     String
+  leaderboard Leaderboard?
 }
