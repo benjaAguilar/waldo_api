@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import { createJWT } from '../lib/utils';
+import { calcUserTime, createJWT } from '../lib/utils';
 import { Leaderboard, User } from '@prisma/client';
 import {
   createUser,
   getLeaderboardById,
+  updateUserEndDateAndTime,
   updateUserStartDate,
 } from '../db/queries';
 import { CustomError } from '../lib/customErrors';
@@ -11,9 +12,7 @@ import { CustomError } from '../lib/customErrors';
 async function postCreateUser(req: Request, res: Response, next: NextFunction) {
   const { leaderboardId } = req.body;
 
-  const leaderboard: Leaderboard | null = await getLeaderboardById(
-    parseInt(leaderboardId),
-  );
+  const leaderboard = await getLeaderboardById(parseInt(leaderboardId));
 
   if (!leaderboard) {
     return next(new CustomError('Leaderboard does not exist', 400));
@@ -47,12 +46,40 @@ async function updateStartDate(
     return next(new CustomError('Session expired', 400));
   }
 
-  const startDate = await updateUserStartDate(user.id, date);
+  const userWithStartDate = await updateUserStartDate(user.id, date);
 
   res.json({
     success: true,
-    startDate,
+    userWithStartDate,
   });
 }
 
-export { postCreateUser, updateStartDate };
+async function updateEndDate(req: Request, res: Response, next: NextFunction) {
+  const { date } = req.body;
+  const user: User | undefined = req.user;
+
+  if (!user) {
+    return next(new CustomError('Session expired', 400));
+  }
+
+  if (!user.startDate) {
+    return next(new CustomError('There was a problem with the time', 400));
+  }
+
+  const totalTimeInMs = date.getTime() - user.startDate.getTime();
+  const totalTime = calcUserTime(totalTimeInMs);
+
+  const userWithEndDateAndTime = await updateUserEndDateAndTime(
+    user.id,
+    date,
+    totalTimeInMs,
+    totalTime,
+  );
+
+  res.json({
+    success: true,
+    userWithEndDateAndTime,
+  });
+}
+
+export { postCreateUser, updateStartDate, updateEndDate };
