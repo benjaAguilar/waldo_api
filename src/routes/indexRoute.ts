@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createUser } from '../controllers/userController';
+import { postCreateUser, updateStartDate } from '../controllers/userController';
 import { tryCatch } from '../lib/tryCatch';
 import { addWaldoImage } from '../controllers/imageController';
 const router = Router();
@@ -7,8 +7,8 @@ const router = Router();
 /*
   >> Al hacer play crear el usuario y enviar la cookie al navegador con la data de la imagen.
           > crear usuario y enviar la cookie al navegador
-          > enviar datos de la imagen
           > asociar usuario con imagen y leaderboard elegidos
+          > enviar datos de la imagen
 
   >> Desde el front enviar la fecha de inicio cuando la imagen se cargo.
           > guardar fecha en la base de datos
@@ -20,7 +20,9 @@ const router = Router();
           > los datos se asociaran a la leaderboard
 */
 
-router.post('/user', tryCatch(createUser));
+router.post('/user', tryCatch(postCreateUser));
 router.post('/image', tryCatch(addWaldoImage));
+
+router.put('/user/startDate', tryCatch(updateStartDate));
 
 export default router;
