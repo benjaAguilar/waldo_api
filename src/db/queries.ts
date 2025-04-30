@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { ImageData, Leaderboard, User } from '@prisma/client';
 import { tryQuery } from '../lib/tryCatch';
 import { prisma } from './prismaClient';
 
@@ -11,7 +11,7 @@ export const addNewImage = async (
   height: number,
   imgRoute: string,
   name: string,
-) => {
+): Promise<ImageData> => {
   return tryQuery(() =>
     prisma.imageData.create({
       data: {
@@ -28,7 +28,10 @@ export const addNewImage = async (
   );
 };
 
-export const addNewLeaderboard = async (name: string, imageId: number) => {
+export const addNewLeaderboard = async (
+  name: string,
+  imageId: number,
+): Promise<Leaderboard> => {
   return tryQuery(() =>
     prisma.leaderboard.create({
       data: {
@@ -49,7 +52,9 @@ export const createUser = async (leaderboardId: number): Promise<User> => {
   );
 };
 
-export const getLeaderboardById = async (id: number) => {
+export const getLeaderboardById = async (
+  id: number,
+): Promise<Leaderboard | null> => {
   return tryQuery(() =>
     prisma.leaderboard.findUnique({
       where: {
@@ -62,7 +67,10 @@ export const getLeaderboardById = async (id: number) => {
   );
 };
 
-export const updateUserStartDate = async (id: number, startDate: Date) => {
+export const updateUserStartDate = async (
+  id: number,
+  startDate: Date,
+): Promise<User> => {
   return tryQuery(() =>
     prisma.user.update({
       where: {
@@ -70,6 +78,26 @@ export const updateUserStartDate = async (id: number, startDate: Date) => {
       },
       data: {
         startDate: startDate,
+      },
+    }),
+  );
+};
+
+export const updateUserEndDateAndTime = async (
+  id: number,
+  endDate: Date,
+  timeInMs: number,
+  time: string,
+): Promise<User> => {
+  return tryQuery(() =>
+    prisma.user.update({
+      where: {
+        id: id,
+      },
+      data: {
+        endDate: endDate,
+        timeInMs: timeInMs,
+        time: time,
       },
     }),
   );
