@@ -1,3 +1,4 @@
+import { User } from '@prisma/client';
 import { tryQuery } from '../lib/tryCatch';
 import { prisma } from './prismaClient';
 
@@ -33,6 +34,42 @@ export const addNewLeaderboard = async (name: string, imageId: number) => {
       data: {
         name: name,
         imageDataId: imageId,
+      },
+    }),
+  );
+};
+
+export const createUser = async (leaderboardId: number): Promise<User> => {
+  return tryQuery(() =>
+    prisma.user.create({
+      data: {
+        leaderboardId: leaderboardId,
+      },
+    }),
+  );
+};
+
+export const getLeaderboardById = async (id: number) => {
+  return tryQuery(() =>
+    prisma.leaderboard.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        imageData: true,
+      },
+    }),
+  );
+};
+
+export const updateUserStartDate = async (id: number, startDate: Date) => {
+  return tryQuery(() =>
+    prisma.user.update({
+      where: {
+        id: id,
+      },
+      data: {
+        startDate: startDate,
       },
     }),
   );
