@@ -26,3 +26,14 @@ export const addNewImage = async (
     }),
   );
 };
+
+export const addNewLeaderboard = async (name: string, imageId: number) => {
+  return tryQuery(() =>
+    prisma.leaderboard.create({
+      data: {
+        name: name,
+        imageDataId: imageId,
+      },
+    }),
+  );
+};
