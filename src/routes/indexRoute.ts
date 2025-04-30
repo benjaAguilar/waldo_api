@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { createUser } from '../controllers/userController';
 import { tryCatch } from '../lib/tryCatch';
+import { addWaldoImage } from '../controllers/imageController';
 const router = Router();
 
 /*
@@ -20,5 +21,6 @@ const router = Router();
 */
 
 router.post('/user', tryCatch(createUser));
+router.post('/image', tryCatch(addWaldoImage));
 
 export default router;
