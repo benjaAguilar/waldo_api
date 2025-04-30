@@ -1,4 +1,4 @@
-import { User } from '../generated/prisma';
+import { User } from '@prisma/client';
 import jsonwebtoken from 'jsonwebtoken';
 import { InternalError } from './customErrors';
 
