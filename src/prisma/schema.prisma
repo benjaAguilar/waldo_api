@@ -16,7 +16,7 @@ datasource db {
 model User {
   id            Int         @id @default(autoincrement())
   username      String?
-  startDate     DateTime
+  startDate     DateTime?
   endDate       DateTime?
   time          Int?
   leaderboard   Leaderboard @relation(fields: [leaderboardId], references: [id])
@@ -24,22 +24,22 @@ model User {
 }
 
 model Leaderboard {
-  id          Int        @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   name        String
   users       User[]
-  imageData   ImageData  @relation(fields: [imageDataId], references: [id])
-  imageDataId Int        @unique
+  imageData   ImageData @relation(fields: [imageDataId], references: [id])
+  imageDataId Int       @unique
 }
 
 model ImageData {
-  id       Int       @id @default(autoincrement())
-  x1       Int
-  x2       Int
-  y1       Int
-  y2       Int
-  width    Int
-  height   Int
-  imgRoute String
-  name     String
+  id          Int          @id @default(autoincrement())
+  x1          Int
+  x2          Int
+  y1          Int
+  y2          Int
+  width       Int
+  height      Int
+  imgRoute    String
+  name        String
   leaderboard Leaderboard?
 }
