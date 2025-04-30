@@ -27,3 +27,17 @@ export function createJWT(user: User) {
     expires: expiresIn,
   };
 }
+
+export function calcUserTime(differenceMs: number) {
+  const min = Math.floor(differenceMs / 60000)
+    .toString()
+    .padStart(2, '0');
+  const sec = Math.floor((differenceMs % 60000) / 1000)
+    .toString()
+    .padStart(2, '0');
+  const ms = Math.floor((differenceMs % 1000) / 10)
+    .toString()
+    .padStart(2, '0');
+
+  return `${min}:${sec}.${ms}`;
+}
