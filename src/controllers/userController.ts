@@ -9,10 +9,18 @@ import {
 } from '../db/queries';
 import { CustomError } from '../lib/customErrors';
 
-async function postCreateUser(req: Request, res: Response, next: NextFunction) {
-  const { leaderboardId } = req.body;
+interface CreateUserBody {
+  leaderboardId?: string;
+}
 
-  const leaderboard = await getLeaderboardById(parseInt(leaderboardId));
+async function postCreateUser(req: Request, res: Response, next: NextFunction) {
+  const body = req.body as CreateUserBody;
+
+  if (!body || !body.leaderboardId) {
+    return next(new CustomError('Missing leaderboard', 400));
+  }
+
+  const leaderboard = await getLeaderboardById(parseInt(body.leaderboardId));
 
   if (!leaderboard) {
     return next(new CustomError('Leaderboard does not exist', 400));
