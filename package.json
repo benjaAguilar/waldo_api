@@ -4,8 +4,8 @@
   "description": "api for wheres waldo game",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
+    "test": "NODE_ENV=test && jest",
+    "dev": "NODE_ENV=development && ts-node-dev --respawn --transpile-only src/app.ts",
     "build": "tsc",
     "start": "node dist/index.js"
   },
