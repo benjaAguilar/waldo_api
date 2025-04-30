@@ -1,13 +1,44 @@
 import { Request, Response, NextFunction } from 'express';
 import { addNewImage, addNewLeaderboard } from '../db/queries';
 import { ImageData, Leaderboard } from '@prisma/client';
+import { CustomError } from '../lib/customErrors';
+
+interface CreateUserBody {
+  x1: string;
+  x2: string;
+  y1: string;
+  y2: string;
+  width: string;
+  height: string;
+  imgRoute: string;
+  name: string;
+}
 
 export async function addWaldoImage(
   req: Request,
   res: Response,
   next: NextFunction,
 ) {
-  const { x1, x2, y1, y2, width, height, imgRoute, name } = req.body;
+  const body = req.body as CreateUserBody;
+
+  let hasEmptyFields = false;
+  for (const [key, value] of Object.entries(body)) {
+    if (value === undefined || value === null || value === '')
+      hasEmptyFields = true;
+  }
+
+  if (!body || hasEmptyFields) {
+    return next(new CustomError('Cannot send empty fields', 400));
+  }
+
+  const { x1, x2, y1, y2, width, height, imgRoute, name } = body;
+
+  const checkNaN = (value: any) => isNaN(value);
+  const hasNaNValues = [x1, x2, y1, y2, width, height].some(checkNaN);
+
+  if (hasNaNValues) {
+    return next(new CustomError('Coords and sizes must be numbers', 400));
+  }
 
   const image: ImageData = await addNewImage(
     parseInt(x1),
@@ -25,5 +56,5 @@ export async function addWaldoImage(
     image.id,
   );
 
-  res.json({ image, leaderboard });
+  res.json({ success: true, image, leaderboard });
 }
