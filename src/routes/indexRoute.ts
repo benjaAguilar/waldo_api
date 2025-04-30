@@ -1,5 +1,9 @@
 import { Router } from 'express';
-import { postCreateUser, updateStartDate } from '../controllers/userController';
+import {
+  postCreateUser,
+  updateEndDate,
+  updateStartDate,
+} from '../controllers/userController';
 import { tryCatch } from '../lib/tryCatch';
 import { addWaldoImage } from '../controllers/imageController';
 const router = Router();
@@ -24,5 +28,6 @@ router.post('/user', tryCatch(postCreateUser));
 router.post('/image', tryCatch(addWaldoImage));
 
 router.put('/user/startDate', tryCatch(updateStartDate));
+router.put('/user/endDate', tryCatch(updateEndDate));
 
 export default router;
