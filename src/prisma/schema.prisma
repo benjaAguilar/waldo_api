@@ -18,7 +18,8 @@ model User {
   username      String?
   startDate     DateTime?
   endDate       DateTime?
-  time          Int?
+  timeInMs      Int?
+  time          String?
   leaderboard   Leaderboard @relation(fields: [leaderboardId], references: [id])
   leaderboardId Int
 }
