@@ -1,5 +1,5 @@
 import { ErrorRequestHandler } from 'express';
-import { CustomError, DbError } from '../lib/customErrors';
+import { CustomError, DbError, ValidationError } from '../lib/customErrors';
 
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   console.error(err);
@@ -20,6 +20,14 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
       dbErr: err.dbErr,
     });
     return;
+  }
+
+  if (err instanceof ValidationError) {
+    res.status(err.statusCode).json({
+      success: false,
+      message: err.message,
+      validationErrors: err.validationErrors,
+    });
   }
 
   res.status(500).json({ success: false, message: 'Internal Server Error' });
