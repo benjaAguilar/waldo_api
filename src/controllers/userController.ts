@@ -76,7 +76,12 @@ async function updateStartDate(
 }
 
 async function updateEndDate(req: Request, res: Response, next: NextFunction) {
-  const { dateISO } = req.body;
+  const body = req.body as CreateUserBody;
+
+  if (!body || !body.dateISO) {
+    return next(new CustomError('Missing Date', 400));
+  }
+
   const user: User | undefined = req.user;
 
   if (!user) {
@@ -87,7 +92,12 @@ async function updateEndDate(req: Request, res: Response, next: NextFunction) {
     return next(new CustomError('There was a problem with the time', 400));
   }
 
+  const { dateISO } = body;
   const date = new Date(dateISO);
+
+  if (isNaN(date.getTime())) {
+    return next(new CustomError('Provide a valid date', 400));
+  }
 
   const totalTimeInMs = date.getTime() - user.startDate.getTime();
   const totalTime = calcUserTime(totalTimeInMs);
