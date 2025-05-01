@@ -102,3 +102,19 @@ export const updateUserEndDateAndTime = async (
     }),
   );
 };
+
+export const updateUserUsername = async (
+  id: number,
+  username: string,
+): Promise<User> => {
+  return tryQuery(() =>
+    prisma.user.update({
+      where: {
+        id: id,
+      },
+      data: {
+        username: username,
+      },
+    }),
+  );
+};
