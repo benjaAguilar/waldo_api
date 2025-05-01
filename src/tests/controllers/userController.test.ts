@@ -5,6 +5,7 @@ import {
   addNewImage,
   addNewLeaderboard,
   createUser,
+  updateUserEndDateAndTime,
   updateUserStartDate,
 } from '../../db/queries';
 import { createJWT } from '../../lib/utils';
@@ -269,6 +270,84 @@ describe('Put /user/endDate route', () => {
       .expect((res) => {
         expect(res.body.success).toBe(false);
         expect(res.body.message).toBe('There was a problem with the time');
+      });
+  });
+});
+
+describe('Put /user/username route', () => {
+  it('should return JSON with {success: true, user}', async () => {
+    const image = await addNewImage(
+      1,
+      5,
+      33,
+      55,
+      234,
+      2344,
+      '/waldo_test8',
+      'Waldo and testing 8',
+    );
+    const leaderboard = await addNewLeaderboard(image.name, image.id);
+    const user = await createUser(leaderboard.id);
+    const tokenObject = createJWT(user);
+    await updateUserStartDate(user.id, new Date());
+    await updateUserEndDateAndTime(user.id, new Date(), 0, '00:00.00');
+
+    await request(app)
+      .put('/user/username')
+      .set('Cookie', [`authToken=${tokenObject.token}`])
+      .send({ username: 'Billy' })
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.success).toBe(true);
+        expect(res.body.user).toBeDefined();
+        expect(res.body.user.startDate).not.toBeNull();
+        expect(res.body.user.endDate).not.toBeNull();
+        expect(res.body.user.timeInMs).not.toBeNull();
+        expect(res.body.user.time).not.toBeNull();
+        expect(res.body.user.username).toBe('Billy');
+      });
+  });
+
+  it('cant send invalid usernames', async () => {
+    const image = await addNewImage(
+      1,
+      5,
+      33,
+      55,
+      234,
+      2344,
+      '/waldo_test9',
+      'Waldo and testing 9',
+    );
+    const leaderboard = await addNewLeaderboard(image.name, image.id);
+    const user = await createUser(leaderboard.id);
+    const tokenObject = createJWT(user);
+    await updateUserStartDate(user.id, new Date());
+    await updateUserEndDateAndTime(user.id, new Date(), 0, '00:00.00');
+
+    await request(app)
+      .put('/user/username')
+      .set('Cookie', [`authToken=${tokenObject.token}`])
+      .send({ username: '' })
+      .expect('Content-Type', /json/)
+      .expect(400)
+      .expect((res) => {
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe('Please provide a valid username');
+        expect(res.body.validationErrors).toBeDefined();
+      });
+
+    await request(app)
+      .put('/user/username')
+      .set('Cookie', [`authToken=${tokenObject.token}`])
+      .send({ username: '/rick%' })
+      .expect('Content-Type', /json/)
+      .expect(400)
+      .expect((res) => {
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe('Please provide a valid username');
+        expect(res.body.validationErrors).toBeDefined();
       });
   });
 });
