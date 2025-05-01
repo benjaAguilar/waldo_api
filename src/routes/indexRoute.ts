@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   postCreateUser,
+  putUpdateUsername,
   updateEndDate,
   updateStartDate,
 } from '../controllers/userController';
@@ -37,6 +38,11 @@ router.put(
   '/user/endDate',
   passport.authenticate('jwt', { session: false }),
   tryCatch(updateEndDate),
+);
+router.put(
+  '/user/username',
+  passport.authenticate('jwt', { session: false }),
+  putUpdateUsername,
 );
 
 export default router;
