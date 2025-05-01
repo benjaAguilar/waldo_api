@@ -6,6 +6,7 @@ import {
 } from '../controllers/userController';
 import { tryCatch } from '../lib/tryCatch';
 import { addWaldoImage } from '../controllers/imageController';
+import passport from 'passport';
 const router = Router();
 
 /*
@@ -27,7 +28,15 @@ const router = Router();
 router.post('/user', tryCatch(postCreateUser));
 router.post('/image', tryCatch(addWaldoImage));
 
-router.put('/user/startDate', tryCatch(updateStartDate));
-router.put('/user/endDate', tryCatch(updateEndDate));
+router.put(
+  '/user/startDate',
+  passport.authenticate('jwt', { session: false }),
+  tryCatch(updateStartDate),
+);
+router.put(
+  '/user/endDate',
+  passport.authenticate('jwt', { session: false }),
+  tryCatch(updateEndDate),
+);
 
 export default router;
