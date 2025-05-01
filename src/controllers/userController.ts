@@ -11,6 +11,7 @@ import { CustomError } from '../lib/customErrors';
 
 interface CreateUserBody {
   leaderboardId?: string;
+  dateISO: Date;
 }
 
 async function postCreateUser(req: Request, res: Response, next: NextFunction) {
@@ -47,11 +48,23 @@ async function updateStartDate(
   res: Response,
   next: NextFunction,
 ) {
-  const { date } = req.body;
+  const body = req.body as CreateUserBody;
+
+  if (!body || !body.dateISO) {
+    return next(new CustomError('Missing Date', 400));
+  }
+
   const user: User | undefined = req.user;
 
   if (!user) {
     return next(new CustomError('Session expired', 400));
+  }
+
+  const { dateISO } = body;
+  const date = new Date(dateISO);
+
+  if (isNaN(date.getTime())) {
+    return next(new CustomError('Provide a valid date', 400));
   }
 
   const userWithStartDate = await updateUserStartDate(user.id, date);
@@ -63,7 +76,7 @@ async function updateStartDate(
 }
 
 async function updateEndDate(req: Request, res: Response, next: NextFunction) {
-  const { date } = req.body;
+  const { dateISO } = req.body;
   const user: User | undefined = req.user;
 
   if (!user) {
@@ -73,6 +86,8 @@ async function updateEndDate(req: Request, res: Response, next: NextFunction) {
   if (!user.startDate) {
     return next(new CustomError('There was a problem with the time', 400));
   }
+
+  const date = new Date(dateISO);
 
   const totalTimeInMs = date.getTime() - user.startDate.getTime();
   const totalTime = calcUserTime(totalTimeInMs);
@@ -89,5 +104,7 @@ async function updateEndDate(req: Request, res: Response, next: NextFunction) {
     userWithEndDateAndTime,
   });
 }
+
+// AGREGAR MIDDLEWARE DE NOMBRE DE USUARIO
 
 export { postCreateUser, updateStartDate, updateEndDate };
