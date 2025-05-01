@@ -1,7 +1,12 @@
 import request from 'supertest';
 import { resetDb } from '../../lib/resetTestDb';
 import app from '../testApp';
-import { addNewImage, addNewLeaderboard, createUser } from '../../db/queries';
+import {
+  addNewImage,
+  addNewLeaderboard,
+  createUser,
+  updateUserStartDate,
+} from '../../db/queries';
 import { createJWT } from '../../lib/utils';
 
 beforeAll(async () => {
@@ -145,6 +150,125 @@ describe('Put /users/startDate route', () => {
       .expect((res) => {
         expect(res.body.success).toBe(false);
         expect(res.body.message).toBe('Provide a valid date');
+      });
+  });
+});
+
+describe('Put /user/endDate route', () => {
+  it('should return JSON with {success: true, userWithEndDateAndTime}', async () => {
+    const image = await addNewImage(
+      1,
+      5,
+      33,
+      55,
+      234,
+      2344,
+      '/waldo_test5',
+      'Waldo and testing 5',
+    );
+    const leaderboard = await addNewLeaderboard(image.name, image.id);
+    const user = await createUser(leaderboard.id);
+    const tokenObject = createJWT(user);
+    await updateUserStartDate(user.id, new Date());
+
+    await request(app)
+      .put('/user/endDate')
+      .set('Cookie', [`authToken=${tokenObject.token}`])
+      .send({ dateISO: new Date().toISOString() })
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.success).toBe(true);
+        expect(res.body.userWithEndDateAndTime).toBeDefined();
+        expect(res.body.userWithEndDateAndTime.startDate).not.toBeNull();
+        expect(res.body.userWithEndDateAndTime.endDate).not.toBeNull();
+        expect(res.body.userWithEndDateAndTime.timeInMs).not.toBeNull();
+        expect(res.body.userWithEndDateAndTime.time).not.toBeNull();
+      });
+  });
+
+  it('cant send empty date', async () => {
+    const image = await addNewImage(
+      1,
+      5,
+      33,
+      55,
+      234,
+      2344,
+      '/waldo_test6',
+      'Waldo and testing 6',
+    );
+    const leaderboard = await addNewLeaderboard(image.name, image.id);
+    const user = await createUser(leaderboard.id);
+    const tokenObject = createJWT(user);
+    await updateUserStartDate(user.id, new Date());
+
+    await request(app)
+      .put('/user/endDate')
+      .set('Cookie', [`authToken=${tokenObject.token}`])
+      .send({ dateISO: '' })
+      .expect('Content-Type', /json/)
+      .expect(400)
+      .expect((res) => {
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe('Missing Date');
+      });
+  });
+
+  it('cant send not date value', async () => {
+    const image = await addNewImage(
+      1,
+      5,
+      33,
+      55,
+      234,
+      2344,
+      '/waldo_test8',
+      'Waldo and testing 8',
+    );
+    const leaderboard = await addNewLeaderboard(image.name, image.id);
+    const user = await createUser(leaderboard.id);
+    const tokenObject = createJWT(user);
+    await updateUserStartDate(user.id, new Date());
+
+    await request(app)
+      .put('/user/endDate')
+      .set('Cookie', [`authToken=${tokenObject.token}`])
+      .send({ dateISO: 'random string' })
+      .expect('Content-Type', /json/)
+      .expect(400)
+      .expect((res) => {
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe('Provide a valid date');
+      });
+  });
+
+  it('cant access without a startDate', async () => {
+    const image = await addNewImage(
+      1,
+      5,
+      33,
+      55,
+      234,
+      2344,
+      '/waldo_test7',
+      'Waldo and testing 7',
+    );
+    const leaderboard = await addNewLeaderboard(image.name, image.id);
+    const user = await createUser(leaderboard.id);
+    const tokenObject = createJWT(user);
+    //remove the start date
+    //await updateUserStartDate(user.id, new Date());
+
+    await request(app)
+      .put('/user/endDate')
+      .set('Cookie', [`authToken=${tokenObject.token}`])
+      .send({ dateISO: new Date().toISOString() })
+      .expect('Content-Type', /json/)
+      .expect(400)
+      .expect((res) => {
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe('There was a problem with the time');
       });
   });
 });
