@@ -6,12 +6,17 @@ import {
   getLeaderboardById,
   updateUserEndDateAndTime,
   updateUserStartDate,
+  updateUserUsername,
 } from '../db/queries';
-import { CustomError } from '../lib/customErrors';
+import { CustomError, ValidationError } from '../lib/customErrors';
+import { validateUsername } from '../config/validator';
+import { tryCatch } from '../lib/tryCatch';
+import { validationResult } from 'express-validator';
 
 interface CreateUserBody {
   leaderboardId?: string;
-  dateISO: Date;
+  dateISO?: Date;
+  username?: string;
 }
 
 async function postCreateUser(req: Request, res: Response, next: NextFunction) {
@@ -115,6 +120,37 @@ async function updateEndDate(req: Request, res: Response, next: NextFunction) {
   });
 }
 
-// AGREGAR MIDDLEWARE DE NOMBRE DE USUARIO
+const putUpdateUsername = [
+  ...validateUsername,
+  tryCatch(async (req: Request, res: Response, next: NextFunction) => {
+    const validationErrors = validationResult(req);
+    if (!validationErrors.isEmpty()) {
+      return next(
+        new ValidationError(
+          'Please provide a valid username',
+          400,
+          validationErrors.array(),
+        ),
+      );
+    }
 
-export { postCreateUser, updateStartDate, updateEndDate };
+    const body = req.body as CreateUserBody;
+
+    if (!body || !body.username) {
+      return next(new CustomError('Please provide a valid username', 400));
+    }
+
+    const authUser: User | undefined = req.user;
+
+    if (!authUser) {
+      return next(new CustomError('Session expired', 400));
+    }
+
+    const { username } = body;
+    const user = await updateUserUsername(authUser.id, username);
+
+    res.json({ success: true, user });
+  }),
+];
+
+export { postCreateUser, updateStartDate, updateEndDate, putUpdateUsername };
