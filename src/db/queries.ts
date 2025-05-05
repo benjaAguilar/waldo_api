@@ -28,6 +28,12 @@ export const addNewImage = async (
   );
 };
 
+export const getImages = async (): Promise<ImageData[]> => {
+  return tryQuery(() =>
+    prisma.imageData.findMany({ include: { leaderboard: true } }),
+  );
+};
+
 export const addNewLeaderboard = async (
   name: string,
   imageId: number,
