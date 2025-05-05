@@ -6,7 +6,7 @@ import {
   updateStartDate,
 } from '../controllers/userController';
 import { tryCatch } from '../lib/tryCatch';
-import { addWaldoImage } from '../controllers/imageController';
+import { addWaldoImage, getAllImages } from '../controllers/imageController';
 import passport from 'passport';
 import { getLeaderboard } from '../controllers/leaderboardController';
 const router = Router();
@@ -29,6 +29,8 @@ const router = Router();
 
 router.post('/user', tryCatch(postCreateUser));
 router.post('/image', tryCatch(addWaldoImage));
+
+router.get('/image', tryCatch(getAllImages));
 
 router.put(
   '/user/startDate',
