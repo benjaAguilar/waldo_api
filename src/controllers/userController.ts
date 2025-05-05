@@ -149,6 +149,8 @@ const putUpdateUsername = [
     const { username } = body;
     const user = await updateUserUsername(authUser.id, username);
 
+    res.clearCookie('authToken');
+
     res.json({ success: true, user });
   }),
 ];
