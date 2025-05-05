@@ -5,10 +5,17 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
 import configurePassport from './config/passportConfig';
+import cors from 'cors';
 
 const app = express();
 
 dotenv.config();
+
+const client = process.env.WHITELIST_CLIENT;
+if (client) {
+  app.use(cors({ origin: client, credentials: true }));
+}
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
