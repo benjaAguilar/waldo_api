@@ -38,7 +38,7 @@ async function postCreateUser(req: Request, res: Response, next: NextFunction) {
   res.cookie('authToken', tokenObject.token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'none',
+    sameSite: 'lax',
     maxAge: 60 * 60 * 1000,
   });
 
