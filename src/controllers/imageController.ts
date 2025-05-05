@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { addNewImage, addNewLeaderboard } from '../db/queries';
+import { addNewImage, addNewLeaderboard, getImages } from '../db/queries';
 import { ImageData, Leaderboard } from '@prisma/client';
 import { CustomError } from '../lib/customErrors';
 
@@ -57,4 +57,17 @@ export async function addWaldoImage(
   );
 
   res.json({ success: true, image, leaderboard });
+}
+
+export async function getAllImages(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  const images = await getImages();
+
+  res.json({
+    success: true,
+    images,
+  });
 }
