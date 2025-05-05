@@ -20,7 +20,7 @@ model User {
   endDate       DateTime?
   timeInMs      Int?
   time          String?
-  leaderboard   Leaderboard @relation(fields: [leaderboardId], references: [id])
+  leaderboard   Leaderboard @relation(fields: [leaderboardId], references: [id], onDelete: Cascade)
   leaderboardId Int
 }
 
@@ -28,7 +28,7 @@ model Leaderboard {
   id          Int       @id @default(autoincrement())
   name        String
   users       User[]
-  imageData   ImageData @relation(fields: [imageDataId], references: [id])
+  imageData   ImageData @relation(fields: [imageDataId], references: [id], onDelete: Cascade)
   imageDataId Int       @unique
 }
 
