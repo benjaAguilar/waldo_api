@@ -8,6 +8,7 @@ import {
 import { tryCatch } from '../lib/tryCatch';
 import { addWaldoImage } from '../controllers/imageController';
 import passport from 'passport';
+import { getLeaderboard } from '../controllers/leaderboardController';
 const router = Router();
 
 /*
@@ -44,5 +45,9 @@ router.put(
   passport.authenticate('jwt', { session: false }),
   putUpdateUsername,
 );
+
+router.get('/leaderboard/:id', tryCatch(getLeaderboard));
+
+// >> AGREGAR UN LIMPIADOR DE DATOS PERDIDOS QUE FUNCIONE POR DIA
 
 export default router;
