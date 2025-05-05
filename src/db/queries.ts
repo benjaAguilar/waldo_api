@@ -118,3 +118,23 @@ export const updateUserUsername = async (
     }),
   );
 };
+
+export const getUsersByLeaderboard = async (
+  leaderboardId: number,
+): Promise<[User]> => {
+  return tryQuery(() =>
+    prisma.user.findMany({
+      where: {
+        leaderboardId: leaderboardId,
+        startDate: { not: null },
+        endDate: { not: null },
+        time: { not: null },
+        timeInMs: { not: null },
+        username: { not: null },
+      },
+      orderBy: {
+        timeInMs: 'asc',
+      },
+    }),
+  );
+};
