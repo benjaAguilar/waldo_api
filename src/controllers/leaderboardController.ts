@@ -1,5 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { getLeaderboardById, getUsersByLeaderboard } from '../db/queries';
+import {
+  getLeaderboardByIdWhitoutImageData,
+  getUsersByLeaderboard,
+} from '../db/queries';
 import { CustomError } from '../lib/customErrors';
 
 async function getLeaderboard(req: Request, res: Response, next: NextFunction) {
@@ -9,7 +12,7 @@ async function getLeaderboard(req: Request, res: Response, next: NextFunction) {
     return next(new CustomError('Provide a valid leaderboard param', 400));
   }
 
-  const leaderboard = await getLeaderboardById(leaderboardId);
+  const leaderboard = await getLeaderboardByIdWhitoutImageData(leaderboardId);
   const users = await getUsersByLeaderboard(leaderboardId);
 
   if (!leaderboard) {
