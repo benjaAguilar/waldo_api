@@ -6,7 +6,7 @@
   "scripts": {
     "test": "NODE_ENV=test && jest",
     "dev": "NODE_ENV=development && ts-node-dev --respawn --transpile-only src/app.ts",
-    "build": "prisma generate && tsc",
+    "build": "prisma generate --schema=src/prisma/schema.prisma && tsc",
     "start": "node dist/app.js"
   },
   "repository": {
