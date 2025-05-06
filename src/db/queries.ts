@@ -73,6 +73,18 @@ export const getLeaderboardById = async (
   );
 };
 
+export const getLeaderboardByIdWhitoutImageData = async (
+  id: number,
+): Promise<Leaderboard | null> => {
+  return tryQuery(() =>
+    prisma.leaderboard.findUnique({
+      where: {
+        id: id,
+      },
+    }),
+  );
+};
+
 export const updateUserStartDate = async (
   id: number,
   startDate: Date,
